@@ -2,31 +2,42 @@
 #include <stdlib.h>
 #include "include/Status.h"
 #include "include/Queue.h"
-#define MAX_VERTEX_NUM 20
-#define VEX_NUM 5
+#define VEX_NUM 8
 #define ENDNODE -1
 
 typedef enum {DG, DN, UDG, UDN} GraphKind;  //{有向图，有向网，无向图，无向网}
 typedef int VexType;
 
 typedef struct ArcNode{
-    VexType    adjvex;              //弧头所在的顶点的位置
+    VexType    adjvex;          //弧头所在的顶点的位置
     struct ArcNode  *nextarc;   //指向下一条弧的指针
     char*  info;                //该弧的相关信息
 }ArcNode;
 
 typedef struct {
-    char*  info;                //顶点的相关信息
+    char*  info;                 //顶点的相关信息
     ArcNode *firstarc;           //指向第一条依附该顶点的弧的指针
-}VNode, AdjList[MAX_VERTEX_NUM];
+}VNode;
 
 typedef struct {
-    AdjList        vertices;         //顶点数组
+    VNode          *vertices;         //顶点数组
     int            vexnum, arcnum;   //图的当前顶点数和弧数
     GraphKind      kind;             //图的种类标识
 }ALGraph;
 
 Boolean visited[VEX_NUM];
+
+int arc[9][2] = {
+			{0, 1},
+			{0, 2},
+			{1, 3},
+			{1, 4},
+			{2, 5},
+			{2, 6},
+			{3, 7},
+			{4, 7},
+			{5, 7}
+};
 
 void throughNode(ArcNode* node, int h)
 {
@@ -40,11 +51,11 @@ void throughNode(ArcNode* node, int h)
 
 Status createDG(ALGraph *G)
 {
-   printf("请输入图的顶点数和弧数:\n");
-   scanf("%d %d", &(G->vexnum), &(G->arcnum));
-
-   //顶点数超过预设值，返回错误
-   if(G->vexnum > MAX_VERTEX_NUM) return -1;
+   //printf("请输入图的顶点数和弧数:\n");
+   //scanf("%d %d", &(G->vexnum), &(G->arcnum));
+   G->vexnum = 8;
+   G->arcnum = 9;
+   G->vertices = (VNode*)malloc(sizeof(VNode) * G->vexnum);
 
    //初始化顶点数组
    for(int i=0; i < G->vexnum; i++){
@@ -57,8 +68,10 @@ Status createDG(ALGraph *G)
    //初始化弧
    int t,h;
    for(int j=0; j < G->arcnum; j++){
-      printf("请输入弧尾和弧头:\n");
-      scanf("%u %u", &t, &h);
+      //printf("请输入弧尾和弧头:\n");
+      //scanf("%u %u", &t, &h);
+      t = arc[j][0];
+      h = arc[j][1];
       throughNode(G->vertices[t].firstarc, h);
    }
 
@@ -76,14 +89,14 @@ Status createGraph(ALGraph *G)
    }
 }
 
-VexType firstAdjVex(ALGraph *G, VexType v)
+VexType firstAdjVex(ALGraph *G, VexType u)
 {
-   return (G->vertices[v].firstarc)->adjvex;
+   return (G->vertices[u].firstarc)->adjvex;
 }
 
-VexType nextAdjVex(ALGraph *G, VexType v, VexType pre)
+VexType nextAdjVex(ALGraph *G, VexType u, VexType pre)
 {
-   ArcNode* node = (G->vertices[v].firstarc)->nextarc;
+   ArcNode* node = G->vertices[u].firstarc;
    while(node->nextarc){
       if((node->adjvex == pre) && (node->nextarc->adjvex != ENDNODE))
 	   return node->nextarc->adjvex;

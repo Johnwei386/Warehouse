@@ -9,7 +9,7 @@
  * 3. 若S非空则：
       ① ：从S中移除一条最小权值的边。
       ② ：若移除的边连接两棵不同的树，则将该边添加到最小生成树上
-      并将这两棵树合并为一棵树，添加到F上
+           并将这两棵树合并为一棵树，添加到F上
 ****************************************************************************/
 
 VertexType find(VertexType m, VertexType parent[])
@@ -31,10 +31,10 @@ Boolean uni(VertexType u, VertexType v, VertexType parent[])
 
 Status kruskal(MGraph *G)
 {
-   int vexnum = G->vexnum; //获取顶点数
-   int minicost = 0; //定义最小生成树的生成代价
-   VertexType parent[vexnum]; //定义森林F
-   VRType power[vexnum][vexnum]; //定义权值的辅助二维数组
+   int vexnum = G->vexnum;        //获取顶点数
+   int minicost = 0;              //定义最小生成树的生成代价
+   VertexType parent[vexnum];     //定义森林F
+   VRType power[vexnum][vexnum];  //定义权值的辅助二维数组
    LinkQueue *Q = (LinkQueue*)malloc(sizeof(LinkQueue));//定义集合S，S=队列Q
    initQueue(Q);
 

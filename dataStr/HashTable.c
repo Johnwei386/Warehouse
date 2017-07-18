@@ -36,10 +36,11 @@ int getModVal(int cap)
       state = FALSE;
       for(int j=2; j < i; j++)
       {// 使用试除法检验i是否为素数
-         if((i % j) == 0){
+         if((i % j) == 0)
+	   {
             state = TRUE;
             break;
-         }
+           }
       }
 
       // 当i是素数时，返回i，此时i即为小于cap的最大的素数
@@ -51,7 +52,7 @@ int getModVal(int cap)
 
 KeyIndex getIndex(char *s, int length)
 {// 传入key，key为字符串，返回key对应的索引，使用时要控制key的大小
-   int64_t val = 0; // 推荐使用长整型，但val是阶乘式增加，key的字符过多还是会是val溢出
+   int64_t val = 0; // 推荐使用长整型，但val是阶乘式增加，key的字符过多还是会使val溢出
    char* key = s;
    int modval = getModVal(length);
    if(modval == ERROR) return ERROR;
@@ -121,7 +122,7 @@ Data rmValue(HashTable *H, char* key)
    ConfLink *Cp = H->node_array[i].list;
    ConfLink *pre = Cp; //定义Cp的上一个链节点
 
-   if(!Cp) return ERROR; // 若C为空，则i所在数组节点尚未被使用
+   if(!Cp) return ERROR; // 若Cp为空，则i所在数组节点尚未被使用
 
    if(!(Cp->next))
    {// 若C只有一个链节点，将在判断键值是否相等后决定是否删除这个node数组结点
@@ -205,8 +206,8 @@ char** getKeys(HashTable *H)
       {
          keys[index] = (char*)malloc(strlen(Cp->key)+1);
          strcpy(keys[index], Cp->key);
-         index++;
          Cp = Cp->next;
+         index++;
       }
    }
    return keys;
