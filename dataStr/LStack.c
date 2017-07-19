@@ -1,5 +1,11 @@
 #include "include/LStack.h"
 
+void initStack(Stack *S)
+{
+  S->data = -1;
+  S->next = NULL;
+}
+
 void push(Stack *S, int v)
 {
   Stack *p = (Stack*)malloc(sizeof(Stack));
@@ -20,6 +26,8 @@ Data pop(Stack *S)
 
 Boolean stackEmpty(Stack *S)
 {
-  if(!(S->next)) return TRUE;
-  else return FALSE;
+  if(!(S->next))
+	return TRUE;
+  else
+	return FALSE;
 }

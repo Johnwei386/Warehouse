@@ -10,6 +10,7 @@ typedef struct Stack{
   struct Stack *next;
 }Stack;
 
+void initStack(Stack *S);
 void push(Stack *S, int v);
 Data pop(Stack *S);
 Boolean stackEmpty(Stack *S);

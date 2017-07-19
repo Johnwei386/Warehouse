@@ -1,78 +1,89 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "include/Status.h"
-#include "include/Queue.h"
-#define VEX_NUM 8
-#define ENDNODE -1
+#include "include/ListGraph.h"
 
-typedef enum {DG, DN, UDG, UDN} GraphKind;  //{有向图，有向网，无向图，无向网}
-typedef int VexType;
-
-typedef struct ArcNode{
-    VexType    adjvex;          //弧头所在的顶点的位置
-    struct ArcNode  *nextarc;   //指向下一条弧的指针
-    char*  info;                //该弧的相关信息
-}ArcNode;
-
-typedef struct {
-    char*  info;                 //顶点的相关信息
-    ArcNode *firstarc;           //指向第一条依附该顶点的弧的指针
-}VNode;
-
-typedef struct {
-    VNode          *vertices;         //顶点数组
-    int            vexnum, arcnum;   //图的当前顶点数和弧数
-    GraphKind      kind;             //图的种类标识
-}ALGraph;
-
-Boolean visited[VEX_NUM];
-
-int arc[9][2] = {
-			{0, 1},
-			{0, 2},
-			{1, 3},
-			{1, 4},
-			{2, 5},
-			{2, 6},
-			{3, 7},
-			{4, 7},
-			{5, 7}
+int arc[ARC_NUM][3] = {
+			{0, 1, 0},
+			{0, 2, 0},
+			{0, 3, 0},
+			{2, 1, 0},
+			{2, 4, 0},
+			{3, 4, 0},
+			{5, 3, 0},
+			{5, 4, 0}
 };
 
-void throughNode(ArcNode* node, int h)
+Status throughNode(ArcNode **firstarc, int h, int cost)
 {
-   while(node->nextarc) node = node->nextarc;
+   if(!(*firstarc))
+    {
+      *firstarc = (ArcNode*)malloc(sizeof(ArcNode));
+	(*firstarc)->adjvex = h;
+	(*firstarc)->cost = cost;
+	(*firstarc)->nextarc = NULL;
+      return OK;
+    }
+   ArcNode* prenode = *firstarc;
+   ArcNode* node = (*firstarc)->nextarc;
+   while(node)
+    {
+      prenode = prenode->nextarc;
+      node = node->nextarc;
+    }
+   node = (ArcNode*)malloc(sizeof(ArcNode));
    node->adjvex = h;
-   node->nextarc = (ArcNode*)malloc(sizeof(ArcNode));
-   node->nextarc->adjvex = ENDNODE;
-   node->nextarc->info = NULL;
-   node->nextarc->nextarc = NULL;
+   node->cost = cost;
+   node->nextarc = prenode->nextarc;
+   prenode->nextarc = node;
+
+   return OK;
 }
 
 Status createDG(ALGraph *G)
-{
+{//创建有向图
    //printf("请输入图的顶点数和弧数:\n");
    //scanf("%d %d", &(G->vexnum), &(G->arcnum));
-   G->vexnum = 8;
-   G->arcnum = 9;
+   printf("创建有向图\n");
+   G->vexnum = VEX_NUM;
+   G->arcnum = ARC_NUM;
    G->vertices = (VNode*)malloc(sizeof(VNode) * G->vexnum);
 
    //初始化顶点数组
    for(int i=0; i < G->vexnum; i++){
       G->vertices[i].info = NULL;
-      G->vertices[i].firstarc = (ArcNode*)malloc(sizeof(ArcNode));
-      (G->vertices[i].firstarc)->nextarc = NULL;
-      (G->vertices[i].firstarc)->info = NULL;
+      G->vertices[i].firstarc = NULL;
    }
 
    //初始化弧
-   int t,h;
+   int t,h,cost;
    for(int j=0; j < G->arcnum; j++){
-      //printf("请输入弧尾和弧头:\n");
-      //scanf("%u %u", &t, &h);
       t = arc[j][0];
       h = arc[j][1];
-      throughNode(G->vertices[t].firstarc, h);
+      cost = arc[j][2];
+      throughNode(&(G->vertices[t].firstarc), h, cost);
+   }
+
+  return OK;
+}
+
+Status createDN(ALGraph *G)
+{//创建有向网
+   printf("创建有向网\n");
+   G->vexnum = VEX_NUM;
+   G->arcnum = ARC_NUM;
+   G->vertices = (VNode*)malloc(sizeof(VNode) * G->vexnum);
+
+   //初始化顶点数组
+   for(int i=0; i < G->vexnum; i++){
+      G->vertices[i].info = NULL;
+      G->vertices[i].firstarc = NULL;
+   }
+
+   //初始化弧
+   int t,h,cost;
+   for(int j=0; j < G->arcnum; j++){
+      t = arc[j][0];
+      h = arc[j][1];
+      cost = arc[j][2];
+      throughNode(&(G->vertices[t].firstarc), h, cost);
    }
 
   return OK;
@@ -82,36 +93,44 @@ Status createGraph(ALGraph *G)
 {
    //printf("请输入图的类型：\n");
    //scanf("%d", &(G->kind));
-   G->kind = DG;
+   G->kind = DN;
    switch(G->kind){
       case DG: return createDG(G);  //构建有向图
+      case DN: return createDN(G);  //构建有向网
       default: return ERROR;
    }
 }
 
 VexType firstAdjVex(ALGraph *G, VexType u)
 {
-   return (G->vertices[u].firstarc)->adjvex;
+   if(!(G->vertices[u].firstarc))
+	 return ERROR;
+   else
+	 return (G->vertices[u].firstarc)->adjvex;
 }
 
 VexType nextAdjVex(ALGraph *G, VexType u, VexType pre)
 {
    ArcNode* node = G->vertices[u].firstarc;
-   while(node->nextarc){
-      if((node->adjvex == pre) && (node->nextarc->adjvex != ENDNODE))
-	   return node->nextarc->adjvex;
+   while(node->nextarc)
+   {
+      if(node->adjvex == pre) return node->nextarc->adjvex;
 	node = node->nextarc;
    }
+
    return ERROR;
 }
 
 void BFSTraverse(ALGraph *G)
-{
+{// 广度优先遍历图G
+   printf("广度优先遍历序列： ");
    for(int i = 0; i < G->vexnum; i++) visited[i] = FALSE;
    LinkQueue *Q = (LinkQueue*)malloc(sizeof(LinkQueue));
    initQueue(Q);
-   for(int v = 0; v < G->vexnum; v++){
-      if(!visited[v]){
+   for(int v = 0; v < G->vexnum; v++)
+   {
+      if(!visited[v])
+       {
 	  visited[v] = TRUE;
 	  printf("%d ", v);
 	  enQueue(Q, v);
@@ -130,6 +149,7 @@ void BFSTraverse(ALGraph *G)
    }
 }
 
+/*********************************************************************
 Status main(void)
 {
    ALGraph *G = (ALGraph*)malloc(sizeof(ALGraph));
@@ -139,3 +159,4 @@ Status main(void)
 
    return OK;
 }
+***********************************************************/
