@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include "Status.h"
 #include "Queue.h"
-#define VEX_NUM 6
-#define ARC_NUM 8
+#define VEX_NUM 9
+#define ARC_NUM 11
 
 typedef int VexType;
 typedef enum {DG, DN, UDG, UDN} GraphKind;  //{有向图，有向网，无向图，无向网}

@@ -1,14 +1,17 @@
 #include "include/ListGraph.h"
 
 int arc[ARC_NUM][3] = {
-			{0, 1, 0},
-			{0, 2, 0},
-			{0, 3, 0},
-			{2, 1, 0},
-			{2, 4, 0},
-			{3, 4, 0},
-			{5, 3, 0},
-			{5, 4, 0}
+			{0, 1, 6},
+			{0, 2, 4},
+			{0, 3, 5},
+			{1, 4, 1},
+			{2, 4, 1},
+			{3, 5, 2},
+			{4, 6, 9},
+			{4, 7, 7},
+			{5, 7, 4},
+			{6, 8, 2},
+			{7, 8, 4}
 };
 
 Status throughNode(ArcNode **firstarc, int h, int cost)
@@ -41,7 +44,7 @@ Status createDG(ALGraph *G)
 {//创建有向图
    //printf("请输入图的顶点数和弧数:\n");
    //scanf("%d %d", &(G->vexnum), &(G->arcnum));
-   printf("创建有向图\n");
+   //printf("创建有向图\n");
    G->vexnum = VEX_NUM;
    G->arcnum = ARC_NUM;
    G->vertices = (VNode*)malloc(sizeof(VNode) * G->vexnum);
@@ -66,7 +69,7 @@ Status createDG(ALGraph *G)
 
 Status createDN(ALGraph *G)
 {//创建有向网
-   printf("创建有向网\n");
+   //printf("创建有向网\n");
    G->vexnum = VEX_NUM;
    G->arcnum = ARC_NUM;
    G->vertices = (VNode*)malloc(sizeof(VNode) * G->vexnum);
