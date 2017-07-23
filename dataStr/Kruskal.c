@@ -101,7 +101,7 @@ Status kruskal(MGraph *G)
 Status main(void)
 {
    MGraph *G = (MGraph*)malloc(sizeof(MGraph));
-   createGraph(G);
+   createGraph(G, UDN);
    kruskal(G);
 
    return OK;

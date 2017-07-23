@@ -1,6 +1,6 @@
 #include "include/MatrixGraph.h"
 
-int graph[ARC_NUM][3] = {
+int graph_UDN[10][3] = { //无向网
 				{0, 1, 6}, 
 				{0, 2, 1}, 
 				{0, 3, 5}, 
@@ -13,15 +13,26 @@ int graph[ARC_NUM][3] = {
 				{4, 5, 6}
 			      };
 
+int graph_DN[8][3] = { //有向网
+				{0, 2, 10},
+				{0, 4, 30},
+				{0, 5, 100},
+				{1, 2, 5},
+				{2, 3, 50},
+				{3, 5, 10},
+				{4, 3, 20},
+				{4, 5, 60}
+				};
+
 Status createUDN(MGraph *G)
-{
-  //初始化基本信息
-  int v,a;
-  printf("请输入图的顶点总数，弧数:\n");
-  scanf("%d %d", &v, &a);
-  if(v > VER_NUM) return ERROR;
-  G->vexnum = v;
-  G->arcnum = a;
+{//创建无向网
+   //初始化基本信息
+  //int v,a;
+  //printf("请输入图的顶点总数，弧数:\n");
+  //scanf("%d %d", &v, &a);
+  //if(v > VEX_NUM_UDN) return ERROR;
+  G->vexnum = VEX_NUM_UDN;
+  G->arcnum = ARC_NUM_UDN;
 
   //构造顶点向量
   for(int i = 0; i < G->vexnum; i++) G->vexs[i] = i;
@@ -39,9 +50,9 @@ Status createUDN(MGraph *G)
   for(int i = 0; i < G->arcnum; i++){
     //printf("请输入弧的顶点和相应的权值\n");
     //scanf("%d %d %d", &v1, &v2, &wight);
-    v1 = graph[i][0];
-    v2 = graph[i][1];
-    wight = graph[i][2];
+    v1 = graph_UDN[i][0];
+    v2 = graph_UDN[i][1];
+    wight = graph_UDN[i][2];
     G->arcs[v1][v2].adj = wight;
     G->arcs[v2][v1] = G->arcs[v1][v2]; //无向网保证对称
   }
@@ -49,15 +60,45 @@ Status createUDN(MGraph *G)
   return OK;
 }
 
-Status createGraph(MGraph *G)
+Status createDN(MGraph *G)
+{//创建有向图
+  //初始化基本信息
+  G->vexnum = VEX_NUM_DN;
+  G->arcnum = ARC_NUM_DN;
+
+  //构造顶点向量
+  for(int i = 0; i < G->vexnum; i++) G->vexs[i] = i;
+
+  //初始化邻接矩阵
+  for(int i = 0; i< G->vexnum; i++){
+    for(int j = 0; j< G->vexnum; j++){
+       G->arcs[i][j].adj = INFINITY;
+       G->arcs[i][j].info = NULL;
+    }
+  }
+
+  //构建邻接矩阵
+  int v1,v2,wight;
+  for(int i = 0; i < G->arcnum; i++){
+    v1 = graph_DN[i][0];
+    v2 = graph_DN[i][1];
+    wight = graph_DN[i][2];
+    G->arcs[v1][v2].adj = wight;
+  }
+
+  return OK;
+}
+
+Status createGraph(MGraph *G, GraphKind kind)
 {
    //使用数组(邻接矩阵)创建图
   //printf("请输入图的类型:\n");
   //scanf("%d", &(G->kind));
-  G->kind = UDN;
+  G->kind = kind;
   switch(G->kind){
-     case UDN: return createUDN(G); //构建无向网
-     default: return ERROR;
+	case DN: return createDN(G);   //构建有向网
+	case UDN: return createUDN(G); //构建无向网
+	default: return ERROR;
   }
 }
 
@@ -97,9 +138,9 @@ void DFSTraverse(MGraph *G)
 Status main(void)
 {
   MGraph *G = (MGraph*)malloc(sizeof(MGraph));
-  createGraph(G);
+  createGraph(G, UDN);
   DFSTraverse(G);
   printf("\n");
 
   return OK;
-}*****************************************/
+}**************************************************/

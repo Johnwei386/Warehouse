@@ -73,12 +73,12 @@ Status createHuffman(HTNode ht[], size_t m, size_t w[], size_t n)
 HuffmanCode generateHuffmanCode(HTNode ht[], size_t n)
 {
    HuffmanCode hc = (HuffmanCode)malloc(sizeof(char*) * n);
-   char* cd = (char*)malloc(sizeof(char) * n); //按字符串最长的情况，就是一条单链表
+   char* cd = (char*)malloc(sizeof(char) * n); //按字符串最长的情况
    cd[n-1] = '\0';
    for(int i=0; i<n; i++){
       int start = n-1;
       int c,f;
-      for(c=i, f=ht[i].parent; f!=0; c=f, f=ht[f].parent)
+      for(c = i, f = ht[i].parent; f != 0; c = f, f = ht[f].parent)
 	 if(ht[f].lchild == c) cd[--start] = '0';
 	 else cd[--start] = '1';
       hc[i] = (char*)malloc(sizeof(char) * (n - start));

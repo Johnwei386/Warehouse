@@ -73,7 +73,7 @@ Status miniSpanTree_PRIM(MGraph *G, VertexType u)
 Status main(void)
 {
   MGraph *G = (MGraph*)malloc(sizeof(MGraph));
-  createGraph(G);
+  createGraph(G, UDN);
   miniSpanTree_PRIM(G, 0);
 
   return OK;
