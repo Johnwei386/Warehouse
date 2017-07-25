@@ -4,6 +4,9 @@
 int D[VEX_NUM];  //从v0到终点vi的最短路径长度的数组
 Boolean P[VEX_NUM][VEX_NUM];  //从v0出发到终点vi的最短路径映射数组
 
+int FD[VEX_NUM][VEX_NUM]; //从v到w的最短路径代价二维数组
+Boolean FP[VEX_NUM][VEX_NUM][VEX_NUM]; //保存从v到w的最短路径上的顶点u的三维数组，nice!
+
 void shortPath_DIJ(MGraph *G, int v0)
 {//用Dijkstra算法求有向网G的v0到其余顶点v的最短路径P[v]和带权长度D[v]
 	Boolean final[G->vexnum]; //final为状态数组，final[v]为真，表示已求得从v0到v的最短路径
@@ -129,11 +132,55 @@ Boolean getShortPath(MGraph *G, int s, int d)
 	return TRUE;
 }
 
+/************************************************************************************
+ * 弗洛伊德算法是一个归纳定义，首先判断在顶点v和w之间是否存在弧，若<v, w>存在
+ * 则设中间顶点Xk，k从0到n，n为G的总的顶点数。若<v, Xk>和<Xk, w>分别是
+ * 从v到Xk和从Xk到w的中间顶点的序号<= k-1的最短路径，则将<v, Xk, w>和已经得
+ * 到的从v到w且中间顶点序号<= k-1的最短路径相比较其长度最小者为当前已得到的从v到w
+ * 的中间顶点序号<= k的最短路径，遍历整k的序号空间即得到当前有向网G的最短路径集
+*********************************************************************************/
+void shortPath_Floyd(MGraph *G)
+{//求有向网G的各个顶点的最短路径的弗洛伊德算法，顶点v和w之间的最短路径FP[v][w]
+ //和带权长度FD[v][w]，若FP[v][w][u]为TRUE，则u是从v到w当前求得最短
+ //路径上的顶点。
+	for(int v = 0; v < G->vexnum; v++)
+	{//初始化FD和FP
+		for(int w = 0; w < G->vexnum; w++)
+		{
+			FD[v][w] = G->arcs[v][w].adj;
+			for(int u = 0; u < G->vexnum; u++) FP[v][w][u] = FALSE;
+			if(FD[v][w] < INFINITY)
+			{//从v到w有直接路径
+				FP[v][w][v] = TRUE;
+				FP[v][w][w] = TRUE;
+			}
+		}
+	}
+
+	for(int u = 0; u < G->vexnum; u++)
+	{//求最短路径FP和带权长度FD，遍历k的序号空间
+		for(int v = 0; v < G->vexnum; v++)
+		{//遍历从v到w的二维顶点映射分布，对每一个k，求<v,Xk,w>是否更短
+			for(int w = 0; w < G->vexnum; w++)
+			{
+				if((FD[v][u] + FD[u][w]) < FD[v][w])
+				{//从v经u到w存在一条路径更短
+					FD[v][w] = FD[v][u] + FD[u][w]; //更新<v,w>的带权长度
+					for(int i = 0; i < G->vexnum; i++)
+						//将v到w上的路径置为v到u和u到w上的路径上的所有顶点
+						FP[v][w][i] = FP[v][u][i] || FP[u][w][i];
+				}
+			}
+		}
+	}
+}
+
 Status main(void)
 {
 	MGraph *G = (MGraph*)malloc(sizeof(MGraph));
 	createGraph(G, DN);
 	getShortPath(G, 0, 5);
+	shortPath_Floyd(G);
 
 	return OK;
 }
