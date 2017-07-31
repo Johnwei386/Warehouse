@@ -24,6 +24,7 @@ Status throughNode(ArcNode **firstarc, int h, int cost)
 	(*firstarc)->nextarc = NULL;
       return OK;
     }
+
    ArcNode* prenode = *firstarc;
    ArcNode* node = (*firstarc)->nextarc;
    while(node)

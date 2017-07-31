@@ -40,13 +40,38 @@ void leftBalance(BSTree T, BSTree Pre, ChildType type)
 			T->bf = EH;	
 			lc->bf = EH;
 			R_Rotate(T);
-			if(type)
-				Pre->rchild = T;
-			else
-				Pre->lchild = T;
+			if(!Pre){
+				if(type)
+					Pre->rchild = T;
+				else
+					Pre->lchild = T;
+			}
 			break;
 		case RH:		//新节点插入在T的左孩子的右子树上，作双旋处理(先左后右)
 			BSTNode *rd = lc->rchild; //rd指向T的左孩子的右子树根
-			
+			switch(rd->bf){//修改T及其左孩子的平衡因子,???|_|???
+				case LH:
+					T->bf = RH;
+					lc->bf = EH;
+					break;
+				case EH:
+					T->bf = EH;
+					lc->bf = EH;
+					break;
+				case RH:
+					T->bf = EH;
+					lc->bf = LH;
+					break;
+			}
+			rd->bf = EH;
+			L_Rotate(T->lchild); //对T的左子树作左旋平衡处理
+			R_Rotate(T); //对T作右旋平衡处理
+			if(!Pre){
+				if(type)
+					Pre->rchild = T;
+				else
+					Pre->lchild = T;
+			}
+			break;
 	}
 }
