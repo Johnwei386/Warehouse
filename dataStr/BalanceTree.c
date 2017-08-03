@@ -6,7 +6,7 @@
 #define RH -1   //右高
 
 typedef int KeyType;
-typedef enum{LC, RC} ChildType;	//定义左右孩子的类型
+typedef enum{LC, RC} ChildType; //定义左右孩子的类型
 typedef struct BSTNode{   //定义可平衡处理的二叉排序树
 	KeyType  key;	//键即数据
 	int bf;		//结点的平衡因子
@@ -43,20 +43,15 @@ void leftBalance(BSTree *T, BSTree Pre, ChildType type)
 			(*T)->bf = EH;	
 			lc->bf = EH;
 			R_Rotate(T);
-			if(!Pre){
-				if(type)
-					Pre->rchild = *T;
-				else
-					Pre->lchild = *T;
-			}
 			break;
 		case RH:		//新节点插入在T的左孩子的右子树上，作双旋处理(先左后右)
-			rd = lc->rchild; //rd指向T的左孩子的右子树根
-			switch(rd->bf){//修改T及其左孩子的平衡因子,???|_|???
-			//二叉排序树的插入特点是自叶节点插入，所以当需对子树做平衡处理时
-			//一定是叶节点的插入使上层结点的平衡因子发生了变化，所以这里右子树
-			//的根节点总是等高的，因为它是新插入的，所以在这里判断左孩子的右子树
-			//的平衡因子是没有任何意义的？？？(不确定，待定)
+			//原本T的左支高于右支，T的左孩子a左右平衡，a的右孩子b也左右平衡
+			//当在b的左孩子c下插入一个新结点时都会是a失衡为RH(右高)，而此时T更加失衡
+			//而调用左旋平衡处理失衡，处理完后，b是整棵树的根节点，b的右孩子为T，此时T
+			//是右高。
+			rd = lc->lchild; //rd指向T的左孩子的右子树根
+			switch(rd->bf){//修改T及其左孩子的平衡因子,
+			//二叉排序树的插入特点是自叶节点插入
 				case LH:
 					(*T)->bf = RH;
 					lc->bf = EH;
@@ -73,44 +68,57 @@ void leftBalance(BSTree *T, BSTree Pre, ChildType type)
 			rd->bf = EH;
 			L_Rotate(&((*T)->lchild)); //对T的左子树作左旋平衡处理
 			R_Rotate(T); //对T作右旋平衡处理
-			if(!Pre){
-				if(type)
-					Pre->rchild = *T;
-				else
-					Pre->lchild = *T;
-			}
 			break;
+	}
+
+	if(Pre)
+	{//若上层父节点非空，让上层父节点指向修改后的子树树根
+		if(type)
+			Pre->rchild = *T;
+		else
+			Pre->lchild = *T;
 	}
 }
 
 void rightBalance(BSTree *T, BSTree Pre, ChildType type)
 {//对以指针T为根结点的二叉树做右旋平衡处理，旋转处理之后，指针T指向新的根结点
  //传入T的父结点Pre，用于修改父结点的子树指针，使其指向新的子树根结点
-	BSTNode *rc = (*T)->lchild;	//lc指向T的右子树根节点
+	BSTNode *rc = (*T)->rchild;	//lc指向T的右子树根节点
+	BSTNode *rd;
 	switch(rc->bf){		//检查T的右子树的平衡度，并作相应的平衡处理
-		case RH:		//新节点插入在T的右孩子的右子树上，要作单左旋处理
+		case LH: //左树比右树高，新节点插入在T的右孩子的左子树上，作双旋处理(先右后左)
+			rd = rc->lchild; //rd指向T的右孩子的左子树根
+			switch(rd->bf){//修改T及其右孩子孩子的平衡因子
+				case LH:
+					(*T)->bf = EH;
+					rc->bf = RH;
+					break;
+				case EH:
+					(*T)->bf = EH;
+					rc->bf = EH;
+					break;
+				case RH:
+					(*T)->bf = LH;
+					rc->bf = EH;
+					break;
+			}
+			rd->bf = EH;
+			R_Rotate(&((*T)->rchild)); //对T的右子树作右旋处理
+			L_Rotate(T); //对T作左旋平衡处理
+			break;
+		case RH:		//右树比左树高，新节点插入在T的右孩子的右子树上，要作单左旋处理
 			(*T)->bf = EH;	
 			rc->bf = EH;
 			L_Rotate(T);
-			if(!Pre){
-				if(type)
-					Pre->rchild = *T;
-				else
-					Pre->lchild = *T;
-			}
 			break;
-		case LH:		//新节点插入在T的右孩子的左子树上，作双旋处理(先右后左)
-			(*T)->bf = EH;
-			rc->bf = EH;
-			R_Rotate(&((*T)->rchild)); //对T的右子树作右旋平衡处理
-			L_Rotate(T); //对T作左旋平衡处理
-			if(!Pre){
-				if(type)
-					Pre->rchild = *T;
-				else
-					Pre->lchild = *T;
-			}
-			break;
+	}
+	
+	if(Pre)
+	{//若上层父节点非空，让上层父节点指向修改后的子树树根
+		if(type)
+			Pre->rchild = *T;
+		else
+			Pre->lchild = *T;
 	}
 }
 
@@ -173,5 +181,17 @@ Boolean insertAVL(BSTree *T, BSTree Pre, KeyType key)
 
 		}
 	}
+
 	return TRUE;
+}
+
+Status main(void)
+{
+	BSTree Tree;
+	Tree = NULL;
+	int key[] = {13, 24, 37, 90, 53};
+	for(int i = 0; i < 5; i++) insertAVL(&Tree, NULL, key[i]);
+	printf("OK It's done! \n");	
+
+	return OK;
 }
