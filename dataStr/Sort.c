@@ -28,6 +28,30 @@ void insertSort(SqList *L)
 	}
 }
 
+void bInsertSort(SqList *L)
+{//对顺序表L左折半插入排序
+	int i,j,key;
+	int n = L->length;
+	int high, low, m;
+	for(i = 1; i < n; i++)
+	{
+		key = L->R[i].key;
+		low = 0;
+		high = i-1;
+		while(low <= high)
+		{
+			m = (low + high)/2; //下取整
+			if(key <= L->R[m].key)
+				high = m-1;
+			else
+				low = m+1;
+		}
+
+		for(j = i-1; j >= high+1; j--) L->R[j+1].key = L->R[j].key;
+		L->R[high+1].key = key;
+	}
+}
+
 Status main(void)
 {
 	int a[] = {49, 38, 65, 97, 76, 13, 27, 50};
