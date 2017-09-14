@@ -29,7 +29,7 @@ void insertSort(SqList *L)
 }
 
 void bInsertSort(SqList *L)
-{//对顺序表L左折半插入排序
+{//对顺序表L作折半插入排序
 	int i,j,key;
 	int n = L->length;
 	int high, low, m;
