@@ -13,7 +13,7 @@ typedef struct BTNode{
 }BTNode, *BTree;
 
 typedef struct{
-	BTNode *pt; //指向找的的结点
+	BTNode *pt; //指向找到的结点
 	int index; //关键字序号
 	Boolean tag; //查找成功标志位
 }Result; //B-树的查找结果类型
