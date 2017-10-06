@@ -3,13 +3,13 @@
 
 Status main(void)
 {
-	char *a = "你好， 世界！"
-	int a, b;
-	a = 12;
+	char *a = "你好， 世界！";
+	int t, b;
+	t = 12;
 	b = 13;
-	int c = sum(a, b);
+	int c = sum(t, b);
 	testPrint(a);
-	printSum(c)
+	printSum(c);
 
 	return OK;
 }

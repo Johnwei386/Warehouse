@@ -1,7 +1,4 @@
-INC = /tmp/test/include
-INCDIRS = -I${INC}
-CFLAGS = -g -Wall ${INCDIRS}
-MAKE = make -$(MAKEFLAGS)
+include in.mk
 
 usage:
 	@echo " " >&2 
@@ -9,11 +6,14 @@ usage:
 	@echo "make clean 用来清除已编译的程序" >&2
 	@echo " " >&2
 
-built:
-	mkdir bin
+built: main.o
 	cd dom1 && ${MAKE}
 	cd dom2 && ${MAKE}
 	cd bin && ${CC} ${CFLAGS} -o testp *.o
+
+main.o: main.c Status.h Ceshi.h
+	mkdir bin
+	${CC} ${CFLAGS} -c -o bin/main.o main.c
 
 clean:
 	rm -rf bin

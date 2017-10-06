@@ -1,0 +1,12 @@
+libcrypto
+libnetsnmp-devel
+sane-devel
+pyqt4-dbus
+cups-devel
+reportlab
+libusb
+libtool
+cups-image
+python-notify
+xsane
+avahi-utils
