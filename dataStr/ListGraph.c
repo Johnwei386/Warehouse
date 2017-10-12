@@ -16,29 +16,29 @@ int arc[ARC_NUM][3] = {
 
 Status throughNode(ArcNode **firstarc, int h, int cost)
 {
-   if(!(*firstarc))
-    {
-      *firstarc = (ArcNode*)malloc(sizeof(ArcNode));
-	(*firstarc)->adjvex = h;
-	(*firstarc)->cost = cost;
-	(*firstarc)->nextarc = NULL;
-      return OK;
-    }
+	if(!(*firstarc))
+	{
+		*firstarc = (ArcNode*)malloc(sizeof(ArcNode));
+		(*firstarc)->adjvex = h;
+		(*firstarc)->cost = cost;
+		(*firstarc)->nextarc = NULL;
+		return OK;
+ 	}
 
-   ArcNode* prenode = *firstarc;
-   ArcNode* node = (*firstarc)->nextarc;
-   while(node)
-    {
-      prenode = prenode->nextarc;
-      node = node->nextarc;
-    }
-   node = (ArcNode*)malloc(sizeof(ArcNode));
-   node->adjvex = h;
-   node->cost = cost;
-   node->nextarc = prenode->nextarc;
-   prenode->nextarc = node;
+	ArcNode *prenode = *firstarc;
+	ArcNode *node = (*firstarc)->nextarc;
+	while(node)
+	{
+		prenode = prenode->nextarc;
+		node = node->nextarc;
+	}
+	node = (ArcNode*)malloc(sizeof(ArcNode));
+	node->adjvex = h;
+	node->cost = cost;
+	node->nextarc = prenode->nextarc;
+	prenode->nextarc = node;
 
-   return OK;
+	return OK;
 }
 
 Status createDG(ALGraph *G)
