@@ -24,12 +24,12 @@ Status enQueue(LinkQueue *Q,int e)
 Data deQueue(LinkQueue *Q)
 {
    if(isQueueEmpty(Q)) //队列为空
-	return ERROR;
+		return ERROR;
    QNodePtr node = Q->front->next;
    int rdata = node->elem;
    Q->front->next = node->next;
    if(node == Q->rear) //若所出队列元素为最后一个元素，则将队列清空
-	 Q->rear = Q->front;
+		Q->rear = Q->front;
    free(node);
    return rdata;
 }
