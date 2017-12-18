@@ -55,7 +55,7 @@ plot(y.res) # 残差散点图
 dev.off()
 png(file = 'residualsAnalysis.png')
 par(mfrow = c(2, 2), mar = c(2.5, 2.5, 1.5, 1.2), mgp = c(1.2, 0.2, 0))
-plot(relation)
+plot(relation) # 四副残差分析图
 dev.off()
 # 用得到的回归模型进行预测，当票价是180时，乘客数是多少？
 new <- data.frame(x=180)
