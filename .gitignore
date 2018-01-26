@@ -1,2 +1,6 @@
 *.[oas]
 testp
+*.png
+*.jpg
+*.gif
+*.pdf
