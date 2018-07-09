@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# _*_ coding: UTF8 _*_
+# -*- coding: utf-8 -*-
 
 num = raw_input("please submit a num:");
 num = int(num)

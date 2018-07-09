@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# _*_ coding: UTF8 _*_
+# -*- coding: utf-8 -*-
 
 # for中的else的判断标准与while一致
 def intersect(*args):

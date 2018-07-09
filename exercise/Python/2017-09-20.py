@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# _*_ coding:UTF8 _*_
+# -*- coding: utf-8 -*-
 
 import time
 
