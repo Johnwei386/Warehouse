@@ -7,6 +7,7 @@ from scipy.misc import imread
 import platform
 
 def load_pickle(f):
+    # 从Python序列化数据文件中载入数据
     version = platform.python_version_tuple()
     if version[0] == '2':
         return  pickle.load(f)
@@ -20,6 +21,7 @@ def load_CIFAR_batch(filename):
     datadict = load_pickle(f)
     X = datadict['data']
     Y = datadict['labels']
+    # 32×32×3的矩阵表示一张彩色图片
     X = X.reshape(10000, 3, 32, 32).transpose(0,2,3,1).astype("float")
     Y = np.array(Y)
     return X, Y
@@ -33,6 +35,7 @@ def load_CIFAR10(ROOT):
     X, Y = load_CIFAR_batch(f)
     xs.append(X)
     ys.append(Y)    
+  # 将5个训练数据集组合成一个大的数据集numpy数组
   Xtr = np.concatenate(xs)
   Ytr = np.concatenate(ys)
   del X, Y
@@ -45,7 +48,7 @@ def get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
     """
     Load the CIFAR-10 dataset from disk and perform preprocessing to prepare
     it for classifiers. These are the same steps as we used for the SVM, but
-    condensed to a single function.
+    condensed(聚集) to a single function.
     """
     # Load the raw CIFAR-10 data
     cifar10_dir = 'cs231n/datasets/cifar-10-batches-py'

@@ -1,4 +1,6 @@
 import numpy as np
+from math import sqrt
+from collections import Counter
 
 class KNearestNeighbor(object):
   """ a kNN classifier with L2 distance """
@@ -12,7 +14,7 @@ class KNearestNeighbor(object):
     memorizing the training data.
 
     Inputs:
-    - X: A numpy array of shape (num_train, D) containing the training data
+    - X: A numpy array of shape (num_train(训练样本数), D) containing the training data
       consisting of num_train samples each of dimension D.
     - y: A numpy array of shape (N,) containing the training labels, where
          y[i] is the label for X[i].
@@ -49,15 +51,15 @@ class KNearestNeighbor(object):
   def compute_distances_two_loops(self, X):
     """
     Compute the distance between each test point in X and each training point
-    in self.X_train using a nested loop over both the training data and the 
+    in self.X_train using a nested loop(嵌套循环) over both the training data and the 
     test data.
 
     Inputs:
     - X: A numpy array of shape (num_test, D) containing test data.
 
     Returns:
-    - dists: A numpy array of shape (num_test, num_train) where dists[i, j]
-      is the Euclidean distance between the ith test point and the jth training
+    - dists(距离矩阵): A numpy array of shape (num_test, num_train) where dists[i, j]
+      is the Euclidean distance(欧氏距离) between the ith test point and the jth training
       point.
     """
     num_test = X.shape[0]
@@ -66,15 +68,14 @@ class KNearestNeighbor(object):
     for i in range(num_test):
       for j in range(num_train):
         #####################################################################
-        # TODO:                                                             #
         # Compute the l2 distance between the ith test point and the jth    #
         # training point, and store the result in dists[i, j]. You should   #
         # not use a loop over dimension.                                    #
         #####################################################################
-        pass
-        #####################################################################
-        #                       END OF YOUR CODE                            #
-        #####################################################################
+        # square求矩阵元素的平方
+        #dists[i,j] = np.sqrt(np.sum(np.square(X[i,:]-self.X_train[j,:])))
+        # 用求解矩阵范数的方式求解距离,范数=(\sum_{i=1}^n |x_i|^2)^(1/2)
+        dists[i,j] = np.linalg.norm(self.X_train[j,:]-X[i,:])
     return dists
 
   def compute_distances_one_loop(self, X):
@@ -89,14 +90,11 @@ class KNearestNeighbor(object):
     dists = np.zeros((num_test, num_train))
     for i in range(num_test):
       #######################################################################
-      # TODO:                                                               #
       # Compute the l2 distance between the ith test point and all training #
       # points, and store the result in dists[i, :].                        #
       #######################################################################
-      pass
-      #######################################################################
-      #                         END OF YOUR CODE                            #
-      #######################################################################
+      # 矩阵为[5000×D],元素为差值,使用范数计算距离
+      dists[i, :] = np.linalg.norm(self.X_train - X[i,:], axis = 1) 
     return dists
 
   def compute_distances_no_loops(self, X):
@@ -110,7 +108,6 @@ class KNearestNeighbor(object):
     num_train = self.X_train.shape[0]
     dists = np.zeros((num_test, num_train)) 
     #########################################################################
-    # TODO:                                                                 #
     # Compute the l2 distance between all test points and all training      #
     # points without using any explicit loops, and store the result in      #
     # dists.                                                                #
@@ -121,10 +118,12 @@ class KNearestNeighbor(object):
     # HINT: Try to formulate the l2 distance using matrix multiplication    #
     #       and two broadcast sums.                                         #
     #########################################################################
-    pass
-    #########################################################################
-    #                         END OF YOUR CODE                              #
-    #########################################################################
+    M = np.dot(X, self.X_train.T)
+    te = np.square(X).sum(axis = 1) # 500
+    tr = np.square(self.X_train).sum(axis = 1) # 5000
+    # x^2 - 2xy + y^2 = (x - y)^2 
+    # np.matrix(te).T + tr产生500×5000个元素
+    dists = np.sqrt(-2 * M + tr + np.matrix(te).T)
     return dists
 
   def predict_labels(self, dists, k=1):
@@ -147,24 +146,27 @@ class KNearestNeighbor(object):
       # the ith test point.
       closest_y = []
       #########################################################################
-      # TODO:                                                                 #
       # Use the distance matrix to find the k nearest neighbors of the ith    #
       # testing point, and use self.y_train to find the labels of these       #
       # neighbors. Store these labels in closest_y.                           #
       # Hint: Look up the function numpy.argsort.                             #
       #########################################################################
-      pass
+      labels = self.y_train[np.argsort(dists[i,:])].flatten()
+      closest_y = labels[0:k]
       #########################################################################
-      # TODO:                                                                 #
       # Now that you have found the labels of the k nearest neighbors, you    #
       # need to find the most common label in the list closest_y of labels.   #
       # Store this label in y_pred[i]. Break ties by choosing the smaller     #
       # label.                                                                #
       #########################################################################
-      pass
-      #########################################################################
-      #                           END OF YOUR CODE                            # 
-      #########################################################################
+      # Counter automatically breaks ties the right way (by choosing the smaller label):
+      # >>> Counter([3, 2, 1, 3, 3, 3, 4, 1, 1, 1]).most_common(1)
+      # [(1, 4)]
+      # >>> Counter([1, 2, 3, 1, 1, 1, 4, 3, 3, 3]).most_common(1)
+      # [(1, 4)]
+      # print closest_y.shape
+      c = Counter(closest_y)
+      y_pred[i] = c.most_common(1)[0][0] # 出现次数最多的元素
 
     return y_pred
 
