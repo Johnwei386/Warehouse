@@ -107,15 +107,17 @@ def grad_check_sparse(f, x, analytic_grad, num_checks=10, h=1e-5):
   """
   sample a few random elements and only return numerical
   in this dimensions.
+  用固定数值作为步幅,计算函数f的变动幅度,并将其与f的导数进行比较
   """
 
   for i in range(num_checks):
+    # 随机产生一个参数数组索引,如([3071],[3])
     ix = tuple([randrange(m) for m in x.shape])
 
-    oldval = x[ix]
+    oldval = x[ix] # 保留原参数值
     x[ix] = oldval + h # increment by h
     fxph = f(x) # evaluate f(x + h)
-    x[ix] = oldval - h # increment by h
+    x[ix] = oldval - h # decrement by h
     fxmh = f(x) # evaluate f(x - h)
     x[ix] = oldval # reset
 
