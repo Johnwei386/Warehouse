@@ -14,6 +14,7 @@ class TwoLayerNet(object):
   In other words, the network has the following architecture:
 
   input - fully connected layer - ReLU - fully connected layer - softmax
+  (3层神经网络分类器)
 
   The outputs of the second fully-connected layer are the scores for each class.
   """
@@ -35,10 +36,10 @@ class TwoLayerNet(object):
     - output_size: The number of classes C.
     """
     self.params = {}
-    self.params['W1'] = std * np.random.randn(input_size, hidden_size)
-    self.params['b1'] = np.zeros(hidden_size)
-    self.params['W2'] = std * np.random.randn(hidden_size, output_size)
-    self.params['b2'] = np.zeros(output_size)
+    self.params['W1'] = std * np.random.randn(input_size, hidden_size) # DxH
+    self.params['b1'] = np.zeros(hidden_size) # H
+    self.params['W2'] = std * np.random.randn(hidden_size, output_size) # HxC
+    self.params['b2'] = np.zeros(output_size) # C
 
   def loss(self, X, y=None, reg=0.0):
     """
@@ -75,7 +76,11 @@ class TwoLayerNet(object):
     # Store the result in the scores variable, which should be an array of      #
     # shape (N, C).                                                             #
     #############################################################################
-    pass
+    layer1 = X.dot(W1)+b1 # NxH
+    layer2 = np.maximum(0, layer1) # relu,NxH
+    layer3 = layer2.dot(W2) + b2 # NxC
+    
+    scores = layer3
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -92,7 +97,9 @@ class TwoLayerNet(object):
     # in the variable loss, which should be a scalar. Use the Softmax           #
     # classifier loss.                                                          #
     #############################################################################
-    pass
+    rows = np.sum(np.exp(layer3), axis=1) # [Nx1]
+    layer4 = np.sum(-layer3[range(N), y] + np.log(rows)) / N
+    loss = layer4 + 0.5 * reg * (np.sum(W1*W1) + np.sum(W2*W2)) # R(W)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -104,7 +111,44 @@ class TwoLayerNet(object):
     # and biases. Store the results in the grads dictionary. For example,       #
     # grads['W1'] should store the gradient on W1, and be a matrix of same size #
     #############################################################################
-    pass
+    
+    # loss对layer4的导数
+    dlayer4 = 1.0
+    
+    # layer4对layer3的导数,用L2范数表示真实分类概率和预测值之间的误差:
+    # (\sum_i^N 1/2(y-f)^2)/N,最小化该式,就得到了最小误差,而f=-l3+log(\sum exp(l3)),
+    # 这里只是把初始的layer3值转化为概率,便于和分类正确的标签作L2范数计算,求得最小误差.
+    # 注意,f只是作为一个转化函数使用,并不用于链式求导过程.
+    dlayer3 = (np.exp(layer3).T / rows).T # NxC
+    ys = np.zeros(dlayer3.shape)
+    ys[range(N), y] = 1
+    dlayer3 -= ys
+    dlayer3 /= N
+    # loss对layer3的导数
+    dlayer3 *= dlayer4
+    
+    # loss对layer2的导数,l3=w2xl2+b2,求l2的偏导数为w2,
+    # dloss/dl2 = dloss/dl3 x dl3/dl2
+    dlayer2 = np.dot(dlayer3, W2.T) # NxH
+    
+    # relu层求导,对已求得的导数作relu操作,得到loss对layer1的导数
+    dlayer1 = np.maximum(0,dlayer2) # NxH
+    
+    # 求解梯度
+    dW1 = np.dot(X.T, dlayer1) # DxH
+    dW2 = np.dot(layer2.T, dlayer3) # HxC
+    db1 = np.sum(dlayer1, axis=0) # H
+    db2 = np.sum(dlayer3, axis=0) # C
+    
+    # 正则化处理
+    dW1 += reg * W1
+    dW2 += reg * W2
+    
+    # Store
+    grads['W1'] = dW1
+    grads['W2'] = dW2
+    grads['b1'] = db1
+    grads['b2'] = db2
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -148,7 +192,9 @@ class TwoLayerNet(object):
       # TODO: Create a random minibatch of training data and labels, storing  #
       # them in X_batch and y_batch respectively.                             #
       #########################################################################
-      pass
+      batch_indicies = np.random.choice(num_train, batch_size, replace = False)
+      X_batch = X[batch_indicies]
+      y_batch = y[batch_indicies]
       #########################################################################
       #                             END OF YOUR CODE                          #
       #########################################################################
@@ -163,7 +209,8 @@ class TwoLayerNet(object):
       # using stochastic gradient descent. You'll need to use the gradients   #
       # stored in the grads dictionary defined above.                         #
       #########################################################################
-      pass
+      for variable in self.params:
+            self.params[variable] -= learning_rate * grads[variable]
       #########################################################################
       #                             END OF YOUR CODE                          #
       #########################################################################
@@ -208,7 +255,12 @@ class TwoLayerNet(object):
     ###########################################################################
     # TODO: Implement this function; it should be VERY simple!                #
     ###########################################################################
-    pass
+    X1 = np.maximum(X.dot(self.params['W1']) + self.params['b1'], 0)
+    X2 = X1.dot(self.params['W2']) + self.params['b2']
+    exp_X2 = np.exp(X2) # NxC
+    scores = (exp_X2.T / np.sum(exp_X2, axis = 1)).T # NxC
+    
+    y_pred = np.argmax(scores, axis = 1) # Nx1
     ###########################################################################
     #                              END OF YOUR CODE                           #
     ###########################################################################
