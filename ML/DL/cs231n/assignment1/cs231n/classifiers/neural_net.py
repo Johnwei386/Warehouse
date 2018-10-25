@@ -76,11 +76,20 @@ class TwoLayerNet(object):
     # Store the result in the scores variable, which should be an array of      #
     # shape (N, C).                                                             #
     #############################################################################
+    #'''原始实现,精确度不高,原因何在?反向传播对relu层的求导其实是对值>0的反馈参数变化
     layer1 = X.dot(W1)+b1 # NxH
-    layer2 = np.maximum(0, layer1) # relu,NxH
-    layer3 = layer2.dot(W2) + b2 # NxC
-    
+    #layer2 = np.maximum(0, layer1) # relu,NxH
+    relu = lambda x: np.maximum(0, x)
+    layer2 = relu(layer1) # (N, H)
+    layer3 = layer2.dot(W2) + b2  # (N, C)    
     scores = layer3
+    #'''
+    
+    '''其它实现
+    relu = lambda x: np.maximum(0, x)
+    hidden1 = relu(X.dot(W1) + b1) # (N, H)
+    scores = hidden1.dot(W2) + b2  # (N, C)
+    '''
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -97,9 +106,26 @@ class TwoLayerNet(object):
     # in the variable loss, which should be a scalar. Use the Softmax           #
     # classifier loss.                                                          #
     #############################################################################
+    #''' 原始实现
+    layer3 -= np.max(layer3, axis=1)[:, np.newaxis]
     rows = np.sum(np.exp(layer3), axis=1) # [Nx1]
     layer4 = np.sum(-layer3[range(N), y] + np.log(rows)) / N
-    loss = layer4 + 0.5 * reg * (np.sum(W1*W1) + np.sum(W2*W2)) # R(W)
+    loss = layer4 + reg * (np.sum(W1 * W1) + np.sum(W2 * W2)) # R(W)
+    #'''
+    
+    '''其它实现
+    # 减去最大值,避免分数数值过大
+    max_score = np.max(scores, axis=1)
+    scores -= max_score[:, np.newaxis]
+
+    row_exp_sum = np.sum(np.exp(scores), axis=1)
+    probs = np.exp(scores) / row_exp_sum[:, np.newaxis] # NxC
+
+    data_loss = np.mean(-np.log(probs[np.arange(N), y]))
+    reg_loss = reg * (np.sum(W1 * W1) + np.sum(W2 * W2))
+
+    loss = data_loss + reg_loss
+    '''
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -111,28 +137,23 @@ class TwoLayerNet(object):
     # and biases. Store the results in the grads dictionary. For example,       #
     # grads['W1'] should store the gradient on W1, and be a matrix of same size #
     #############################################################################
-    
-    # loss对layer4的导数
-    dlayer4 = 1.0
-    
-    # layer4对layer3的导数,用L2范数表示真实分类概率和预测值之间的误差:
+    #''' 原始实现        
+    # layer4(正确分类标记层)对layer3的导数,用L2范数表示真实分类概率和预测值之间的误差:
     # (\sum_i^N 1/2(y-f)^2)/N,最小化该式,就得到了最小误差,而f=-l3+log(\sum exp(l3)),
     # 这里只是把初始的layer3值转化为概率,便于和分类正确的标签作L2范数计算,求得最小误差.
     # 注意,f只是作为一个转化函数使用,并不用于链式求导过程.
     dlayer3 = (np.exp(layer3).T / rows).T # NxC
-    ys = np.zeros(dlayer3.shape)
-    ys[range(N), y] = 1
-    dlayer3 -= ys
+    dlayer3[range(N), y] -= 1
     dlayer3 /= N
-    # loss对layer3的导数
-    dlayer3 *= dlayer4
     
     # loss对layer2的导数,l3=w2xl2+b2,求l2的偏导数为w2,
     # dloss/dl2 = dloss/dl3 x dl3/dl2
     dlayer2 = np.dot(dlayer3, W2.T) # NxH
     
-    # relu层求导,对已求得的导数作relu操作,得到loss对layer1的导数
-    dlayer1 = np.maximum(0,dlayer2) # NxH
+    # relu层求导,只对满足relu阀值限制的神经元的参数反馈参数变化,对变化本身不做relu操作!
+    #dlayer1 = np.maximum(0,dlayer2) # NxH
+    relu_mask = layer2 > 0
+    dlayer1 = dlayer2 * relu_mask # 满足条件的保留,不满足为0
     
     # 求解梯度
     dW1 = np.dot(X.T, dlayer1) # DxH
@@ -141,8 +162,33 @@ class TwoLayerNet(object):
     db2 = np.sum(dlayer3, axis=0) # C
     
     # 正则化处理
-    dW1 += reg * W1
-    dW2 += reg * W2
+    dW1 += 2 * reg * W1
+    dW2 += 2 * reg * W2
+    #''' 
+    
+    '''其它实现方式
+    # Ref: softmax.py for gradient computing of softmax function
+    dscores = probs
+    dscores[np.arange(N), y] -= 1
+    dscores /= N
+
+    dW2 = hidden1.T.dot(dscores)
+    dW2 += 2 * reg * W2
+
+    db2 = dscores.T.dot(np.ones((N, 1)))
+    # np.squeeze: Remove single-dimensional entries from the shape of an array.
+    db2 = np.squeeze(db2)
+
+    dhidden1 = dscores.dot(W2.T)
+    relu_mask = hidden1 > 0
+    drelu = dhidden1 * relu_mask
+
+    dW1 = X.T.dot(drelu)
+    dW1 += 2 * reg * W1
+
+    db1 = np.ones((1, N)).dot(drelu)
+    db1 = np.squeeze(db1)
+    '''
     
     # Store
     grads['W1'] = dW1
@@ -192,9 +238,9 @@ class TwoLayerNet(object):
       # TODO: Create a random minibatch of training data and labels, storing  #
       # them in X_batch and y_batch respectively.                             #
       #########################################################################
-      batch_indicies = np.random.choice(num_train, batch_size, replace = False)
-      X_batch = X[batch_indicies]
-      y_batch = y[batch_indicies]
+      indices = np.random.choice(num_train, batch_size)
+      X_batch = X[indices]
+      y_batch = y[indices]
       #########################################################################
       #                             END OF YOUR CODE                          #
       #########################################################################
@@ -261,6 +307,7 @@ class TwoLayerNet(object):
     scores = (exp_X2.T / np.sum(exp_X2, axis = 1)).T # NxC
     
     y_pred = np.argmax(scores, axis = 1) # Nx1
+    # y_pred = np.argmax(self.loss(X), 1)
     ###########################################################################
     #                              END OF YOUR CODE                           #
     ###########################################################################
