@@ -172,7 +172,7 @@ class Solver(object):
         Make a single gradient update. This is called by train() and should not
         be called manually.
         """
-        # Make a minibatch of training data
+        # Make a minibatch of training data,随机选取一些数据训练模型
         num_train = self.X_train.shape[0]
         batch_mask = np.random.choice(num_train, self.batch_size)
         X_batch = self.X_train[batch_mask]
@@ -187,6 +187,7 @@ class Solver(object):
             dw = grads[p]
             config = self.optim_configs[p]
             next_w, next_config = self.update_rule(w, dw, config)
+            # 更新参数
             self.model.params[p] = next_w
             self.optim_configs[p] = next_config
 
@@ -260,6 +261,7 @@ class Solver(object):
         """
         num_train = self.X_train.shape[0]
         iterations_per_epoch = max(num_train // self.batch_size, 1)
+        # 总的训练次数
         num_iterations = self.num_epochs * iterations_per_epoch
 
         for t in range(num_iterations):
@@ -272,6 +274,7 @@ class Solver(object):
 
             # At the end of every epoch, increment the epoch counter and decay
             # the learning rate.
+            # 每次进化迭代,更新学习率再进行下一次进化迭代
             epoch_end = (t + 1) % iterations_per_epoch == 0
             if epoch_end:
                 self.epoch += 1

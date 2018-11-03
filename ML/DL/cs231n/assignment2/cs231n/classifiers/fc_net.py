@@ -294,17 +294,19 @@ class FullyConnectedNet(object):
             b_i = 'b' + str(i+1)
 
             # First hidden layer
+            # 第1层的输入就是图像数据本身
             if i == 0:
                 # `out` denotes the output from last layer
                 out = X
 
             # With batch normalization
             if self.normalization == 'batchnorm':
-                # affine -> batch norm -> relu
+                # affine -> batch norm -> relu(结构)
                 fc_out, fc_cache = affine_forward(out, self.params[W_i], self.params[b_i])
                 bn_out, bn_cache = batchnorm_forward(fc_out, self.params['gamma'+str(i+1)],
                     self.params['beta'+str(i+1)], self.bn_params[i])
                 out, relu_cache = relu_forward(bn_out)
+                # 对应那一层,第一层除外
                 caches[i+1] = (fc_cache, bn_cache, relu_cache)
 
             # With layer normalization
@@ -356,7 +358,7 @@ class FullyConnectedNet(object):
         loss, dscores = softmax_loss(scores, y)
 
         for i in range(self.num_layers, 0, -1):
-            # Loss with regularization
+            # Loss with regularization(正则化)
             loss += 0.5 * self.reg * np.sum(np.square(self.params['W'+str(i)]))
 
             # Last hidden layer (no batch normalization, no relu, no dropout)

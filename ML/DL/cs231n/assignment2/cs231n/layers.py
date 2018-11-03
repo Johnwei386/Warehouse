@@ -122,14 +122,14 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     """
     Forward pass for batch normalization.
 
-    During training the sample mean and (uncorrected) sample variance are
+    During training the sample mean and (uncorrected) sample variance(方差) are
     computed from minibatch statistics and used to normalize the incoming data.
     During training we also keep an exponentially decaying running mean of the
     mean and variance of each feature, and these averages are used to normalize
     data at test-time.
 
     At each timestep we update the running averages for mean and variance using
-    an exponential decay based on the momentum parameter:
+    an exponential decay(衰减) based on the momentum parameter:
 
     running_mean = momentum * running_mean + (1 - momentum) * xmu
     running_var = momentum * running_var + (1 - momentum) * sample_var
@@ -189,15 +189,15 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         #######################################################################
         
         # Ref: https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html
-        mu = np.mean(x, axis=0)
+        mu = np.mean(x, axis=0) # 1xD
 
-        xmu = x - mu
-        sq = xmu ** 2
-        var = np.var(x, axis=0)
+        xmu = x - mu # NxD
+        sq = xmu ** 2 # NxD
+        var = np.var(x, axis=0) # 1xD
 
-        sqrtvar = np.sqrt(var + eps)
-        ivar = 1./sqrtvar
-        xhat = xmu * ivar
+        sqrtvar = np.sqrt(var + eps) # 1xD
+        ivar = 1./sqrtvar # 1xD
+        xhat = xmu * ivar # NxD
 
         out = gamma * xhat + beta
 
@@ -544,7 +544,7 @@ def conv_forward_naive(x, w, b, conv_param):
 
     The input consists of N data points, each with C channels, height H and
     width W. We convolve each input with F different filters, where each filter
-    spans all C channels and has height HH and width WW.
+    spans all C channels(颜色通道数目) and has height HH and width WW.
 
     Input:
     - x: Input data of shape (N, C, H, W)
@@ -572,7 +572,7 @@ def conv_forward_naive(x, w, b, conv_param):
     ###########################################################################
     
     N, C, H, W = x.shape
-    F, _, HH, WW = w.shape
+    F, _, HH, WW = w.shape # HHxWW,亦是过滤器的大小
     stride, pad = conv_param['stride'], conv_param['pad']
     H_out = 1 + (H + 2 * pad - HH) // stride  # Use `//` for python3
     W_out = 1 + (W + 2 * pad - WW) // stride
@@ -719,6 +719,7 @@ def max_pool_backward_naive(dout, cache):
     			for w in range(W_out):
     				# Find the index (row, col) of the max value
     				# Ref: examples of https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.argmax.html
+                    # 一维平展值与多维矩阵的索引对应,找到最大值在二维矩阵中的索引
     				ind = np.unravel_index(np.argmax(x[n, c, h*stride:h*stride+pool_height,
     					w*stride:w*stride+pool_width], axis=None), (pool_height, pool_width))
     				

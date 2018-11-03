@@ -65,6 +65,7 @@ def conv_forward_strides(x, w, b, conv_param):
     strides = x.itemsize * np.array(strides)
     x_stride = np.lib.stride_tricks.as_strided(x_padded,
                   shape=shape, strides=strides)
+    # 返回一个内存索引有序的数组,快速遍历.
     x_cols = np.ascontiguousarray(x_stride)
     x_cols.shape = (C * HH * WW, N * out_h * out_w)
 

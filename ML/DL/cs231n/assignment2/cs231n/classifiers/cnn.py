@@ -63,6 +63,7 @@ class ThreeLayerConvNet(object):
         # Hidden affine layer
         # Note that the width and height are preserved after the convolutional layer
         # 2x2 max pool makes the width and height reduce by half
+        # 这里假设卷积层的输出大小不变,而池化层的F=2,S=2的情况下,输出大小为原来的一半.
         self.params['W2'] = np.random.randn(num_filters*(H//2)*(W//2), hidden_dim) * weight_scale
         self.params['b2'] = np.zeros(hidden_dim)
 
@@ -91,6 +92,7 @@ class ThreeLayerConvNet(object):
         # pass conv_param to the forward pass for the convolutional layer
         # Padding and stride chosen to preserve the input spatial size
         filter_size = W1.shape[2]
+        # 保证卷积层输出和输入图像的大小一致
         conv_param = {'stride': 1, 'pad': (filter_size - 1) // 2}
 
         # pass pool_param to the forward pass for the max-pooling layer

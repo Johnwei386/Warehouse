@@ -67,6 +67,8 @@ def sgd_momentum(w, dw, config=None):
     ###########################################################################
     
     # Ref: http://cs231n.github.io/neural-networks-3/#sgd
+    # 原来的sgd每个参数下落的速度是一样的,v初始为0就是这样
+    # 现在加一个动量(类似加速度),使得对每个参数的下落速度不同了
     v = config['momentum'] * v - config['learning_rate'] * dw
     next_w = w + v
 
