@@ -1,0 +1,8 @@
+*.npy
+*.pyc
+__pycache__/
+__pycache__/*
+graphs/
+graphs/*
+model/
+model/*
