@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# coding:utf8
+# _*_ coding:utf8 _*_
 
 import sys
 reload(sys)
@@ -61,7 +61,6 @@ def clipAlpha(aj, H, L):
 
 def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
     """smoSimple
-
     Args:
         dataMatIn    数据集
         classLabels  类别标签
