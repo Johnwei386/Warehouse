@@ -109,6 +109,7 @@ class TwoLayerNet(object):
     #''' 原始实现
     layer3 -= np.max(layer3, axis=1)[:, np.newaxis]
     rows = np.sum(np.exp(layer3), axis=1) # [Nx1]
+    # 先计算每一行数据的交叉熵损失,然后除以数据样本总数取平均
     layer4 = np.sum(-layer3[range(N), y] + np.log(rows)) / N
     loss = layer4 + reg * (np.sum(W1 * W1) + np.sum(W2 * W2)) # R(W)
     #'''
@@ -138,10 +139,8 @@ class TwoLayerNet(object):
     # grads['W1'] should store the gradient on W1, and be a matrix of same size #
     #############################################################################
     #''' 原始实现        
-    # layer4(正确分类标记层)对layer3的导数,用L2范数表示真实分类概率和预测值之间的误差:
-    # (\sum_i^N 1/2(y-f)^2)/N,最小化该式,就得到了最小误差,而f=-l3+log(\sum exp(l3)),
-    # 这里只是把初始的layer3值转化为概率,便于和分类正确的标签作L2范数计算,求得最小误差.
-    # 注意,f只是作为一个转化函数使用,并不用于链式求导过程.
+    # layer4(正确分类标记层)对layer3的导数,对交叉熵求one-hot编码的每条数据
+    # 的导数,然后取平均,因为在计算layer4的时候除了N.
     dlayer3 = (np.exp(layer3).T / rows).T # NxC
     dlayer3[range(N), y] -= 1
     dlayer3 /= N
