@@ -1,0 +1,11 @@
+保存一些实用命令
+fuser -k /dev/pts/6   关闭远程连接端口
+git stash 备份当前工作区的内容到Git栈中
+git pop 从Git栈中读取最近一次保存的内容
+git stash list 显示Git栈内的所有备份
+git stash clear 清空Git栈
+git reset --hard 放弃本地修改
+git reset --hard HEAD^ 回退到上一个版本
+git reset --hard f8dce4b(版本号) 切换到指定版本
+git reflog 查看版本号
+91vh5j

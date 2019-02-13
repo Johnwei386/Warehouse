@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # _*_ coding:utf8 _*_
+# python2.7
 
 import os
 import argparse
