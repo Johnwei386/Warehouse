@@ -11,4 +11,4 @@ git reflog 查看版本号
 git config --local user.name 'name' 配置名称(作用域为仓库)
 git remote add origin https://github.com/anonyusers/****.git 添加远程仓库
 git config --global --unset credential.helper 清除已缓存的Token
-91vh5j
+dpkg -l |awk '{print $2}' |grep -i '^nc'  查找nc开头的已安装程序包
