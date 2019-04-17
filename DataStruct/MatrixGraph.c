@@ -11,7 +11,7 @@ int graph_UDN[10][3] = { //无向网
 				{2, 5, 4}, 
 				{3, 5, 2}, 
 				{4, 5, 6}
-			      };
+};
 
 int graph_DN[8][3] = { //有向网
 				{0, 2, 10},
@@ -22,11 +22,11 @@ int graph_DN[8][3] = { //有向网
 				{3, 5, 10},
 				{4, 3, 20},
 				{4, 5, 60}
-				};
+};
 
 Status createUDN(MGraph *G)
 {//创建无向网
-   //初始化基本信息
+  //初始化基本信息
   //int v,a;
   //printf("请输入图的顶点总数，弧数:\n");
   //scanf("%d %d", &v, &a);
@@ -90,8 +90,7 @@ Status createDN(MGraph *G)
 }
 
 Status createGraph(MGraph *G, GraphKind kind)
-{
-   //使用数组(邻接矩阵)创建图
+{//使用数组(邻接矩阵)创建图
   //printf("请输入图的类型:\n");
   //scanf("%d", &(G->kind));
   G->kind = kind;
