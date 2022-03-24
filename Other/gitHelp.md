@@ -1,9 +1,8 @@
 #### 1. 一些git操作命令
 ```bash
 git branch                                                     # 查看本地分支, 加'-r'显示远程分支
-git checkout -b 02-sit origin/02-sit    # 并新建一个本地分支,切换到该分支，映射远程分支，拉取远程分支到本地
+git checkout -b 02-sit origin/02-sit    # 并新建一个本地分支;切换到该分支;映射远程分支;拉取远程分支到本地.
 git checkout 01-dev                                 # 切换分支
-git remote set-url origin http://51.128.5.218/g_hrms/HRMS.git    # 更改远程分支
 git merge 01-dev                        # 合并指定分支到当前分支
 git branch -d dev                       # 删除dev分支
 git stash                                        # 备份当前工作区的内容到Git栈中
@@ -19,7 +18,8 @@ git log --stat                                                # 查看提交日�
 git config --local user.name 'name'                                 # 设置用户名(作用域为仓库)
 git config --local user.email 'jiangwei@oa.bbg'         # 设置邮箱
 git config -l                                                                                 # 列出所有配置
-git remote add origin https://github.com/anonyusers/****.git        # 添加远程仓库
+git remote add origin https://github.com/anonyusers/abcd.git        # 添加远程仓库url
+git remote set-url origin http://192.168.0.218/abcd/abcd.git             # 更改远程仓库url
 git config --global --unset credential.helper                                              # 清除已缓存的Token
 git config --global core.autocrlf false         # Windows系统, 取消git自动转换换行符为CRLF
 ```
