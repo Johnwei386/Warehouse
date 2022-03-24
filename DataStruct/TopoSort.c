@@ -1,6 +1,6 @@
 #include "include/ListGraph.h"
 #include "include/LStack.h"
-int indegree[VEX_NUM]; //顶点入度计数数组
+int indegree[VEX_NUM];   //顶点入度计数数组
 int ve[VEX_NUM];	 //保存各顶点事件的最早发生时间数组
 
 Status findIndegree(ALGraph *G)

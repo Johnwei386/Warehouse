@@ -23,7 +23,7 @@ VertexType minimum(auxArr closedge[], int size)
 {
    int min = INFINITY;
    int vex = -1;
-   for(int j=0; j<size; j++){
+   for(int j = 0; j < size; j++){
       if((closedge[j].lowcast != 0) && (min > closedge[j].lowcast)){
            vex = j;
            min = closedge[j].lowcast;

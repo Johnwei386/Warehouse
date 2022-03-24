@@ -220,3 +220,14 @@ mysql所有的用户信息表在mysql数据库下的user表中, 可在这个表�
 ```mysql
 mysqldump -h localhost -u 用户名 -p 数据库名称 > /tmp/bakname.sql
 ```
+
+40. 为表中的每一行返回一个1
+```mysql
+select 1 from table;
+```
+
+41. 确定表是否为空
+```mysql
+select exists(select 1 from table);
+```
+

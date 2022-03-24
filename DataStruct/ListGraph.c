@@ -153,7 +153,7 @@ void BFSTraverse(ALGraph *G)
    }
 }
 
-/*********************************************************************
+
 Status main(void)
 {
    ALGraph *G = (ALGraph*)malloc(sizeof(ALGraph));
@@ -163,4 +163,4 @@ Status main(void)
 
    return OK;
 }
-***********************************************************/
+
