@@ -122,3 +122,10 @@ git  push  origin  Branch-B
 
 ```
 
+#### 10. 创建并拉取远程分支
+
+```bash
+# 此命令会先创建一个本地05-trunk分支, 然后去拉取远程仓库的05-trunk分支
+git checkout -b 05-trunk origin/05-trunk
+```
+
