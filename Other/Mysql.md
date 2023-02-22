@@ -226,7 +226,14 @@ mysqldump -h localhost -u 用户名 -p 数据库名称 > /tmp/bakname.sql
 select 1 from table;
 ```
 
-41. 确定表是否为空
+41. 授权用户操作库的权限
+
+    ```bash
+    GRANT ALL PRIVILEGES ON shiguang.* TO "john"@"%" IDENTIFIED BY "12345" WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
+    ```
+
+42. 确定表是否为空
 ```mysql
 select exists(select 1 from table);
 ```
