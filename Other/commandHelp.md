@@ -36,3 +36,13 @@ ffmpeg -i 美丽心灵.mp4 -ss 00:00:00 -to 00:25:00 output/1.mp
 aria2c --enable-rpc --rpc-allow-origin-all
 ```
 
+#### linux配置加载动态链接库
+
+```bash
+# 1. 配置/etc/ld.so.conf文件, 此文件会加载/etc/ld.so.conf.d/目录下的所有配置文件,在此目录下添加配置文件即可
+# 2. 执行ldconfig, 生效动态链接库配置
+
+```
+
+
+

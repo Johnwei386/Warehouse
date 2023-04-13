@@ -129,3 +129,9 @@ git  push  origin  Branch-B
 git checkout -b 05-trunk origin/05-trunk
 ```
 
+#### 11. 放弃本地修改,强制与远程分支同步
+
+```bash
+git  reset  --hard  origin/master
+```
+
