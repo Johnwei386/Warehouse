@@ -126,12 +126,49 @@ git  push  origin  Branch-B
 
 ```bash
 # 此命令会先创建一个本地05-trunk分支, 然后去拉取远程仓库的05-trunk分支
+# 同时设置一个追踪分支,使该本地分支同步远程分支
 git checkout -b 05-trunk origin/05-trunk
+
+# 查看本地分支和远程分支的关系
+git branch -vv
+
+# 设置当前分支跟踪其它分支
+git branch -u origin/master
 ```
 
 #### 11. 放弃本地修改,强制与远程分支同步
 
 ```bash
 git  reset  --hard  origin/master
+```
+
+#### 12. 删除分支
+
+```bash
+# 强制切换分支
+git  checkout  -f  branch-b
+
+# 删除本地分支
+git  branch  --delete  dev-branch
+git  branch  -D dev-branch  # 强制删除本地分支
+
+# 删除远程分支, 会同时删除远程分支和追踪分支
+git  push  origin  --delete  dev-branch
+```
+
+#### 13. 本地新建分支并同步到远端
+
+```bash
+# 1. 在本地创建新分支
+git checkout -b dev_qmy
+
+# 2. 添加所有代码和文件
+git  add  .
+
+# 设置远程仓库地址
+git  remote add origin 仓库地址
+
+# 4. 提交新分支并同步到远程仓库
+git push origin dev_qmy
 ```
 
